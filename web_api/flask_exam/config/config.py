@@ -6,6 +6,7 @@ class init_config():
         self.mysql_client = self.init_mysql_client()
     def init_mysql_client(self):
         try:
+            # 透過 docker-compose.yml 內的 link: mysql 拿到hostname
             mysql_config =  MySqlConfig(dbname="Test",
                                         host="mysql",
                                         username="root",

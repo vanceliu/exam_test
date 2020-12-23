@@ -46,11 +46,11 @@ def update_task(id):
 
         if request.method == "PUT":
             result = service.update_task(id)
-            # 判斷拿不到id 要報錯 但不是回傳500
+            # TODO:判斷拿不到id 要報錯 但不是回傳500
             return json.jsonify(result=result), 200
         if request.method == "DELETE":
             result = service.delete_task(id)
-            # 判斷拿不到id 要報錯 但不是回傳500
+            # TODO:判斷拿不到id 要報錯 但不是回傳500
             return "success" ,200
         return 405
     except Exception as e:
