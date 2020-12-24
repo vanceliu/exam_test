@@ -39,6 +39,7 @@ class MySqlRepository(abc.ABC):
     def __init__(self, db):
         self.table = self._get_table()
         self.table._meta.database = db
+        self.db = db
 
     @abc.abstractmethod
     def _get_table(self):

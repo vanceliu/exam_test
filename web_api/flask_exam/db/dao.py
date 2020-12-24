@@ -13,18 +13,24 @@ class TestDao(MySqlRepository):
     def find_all(self):
         result = self.table.select().dicts()
         return result
+    
+    def get_by_id(self, id):
+        result = self.table.select().where(self.table.id==id).dicts().get()
+        return result if result else None
+
+    def check_exist_by_id(self, id):
+        result = self.table.select().where(self.table.id==id).exists()
+        return True if result else False
 
     def insert_data(self, **kwargs):
-    	result = self.table.insert(**kwargs).execute()
+        result = self.table.insert(**kwargs).execute()
+        return result
 
-    	return result
-
-    def update_status(self, id):
-    	result = self.table.update(status=1).where(self.table.id==id).execute()
-
-    	return result
+    def update_data(self, id, **kwargs):
+        result = self.table.update(**kwargs).where(self.table.id==id).execute()
+        return True if result !=0 else False
 
     def delete_data(self, id):
-    	result = self.table.delete().where(self.table.id==id).execute()
-
-    	return result
+        result = self.table.delete().where(self.table.id==id).execute()
+        print(result)
+        return True if result !=0 else False

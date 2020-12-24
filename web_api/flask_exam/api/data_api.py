@@ -2,6 +2,7 @@
 import traceback
 from flask import Blueprint, json, current_app, request
 from service.data_service import DataService
+
 data_api = Blueprint("data_api", __name__)
 
 @data_api.teardown_app_request
@@ -15,7 +16,7 @@ def list_tasks():
 
     service = DataService(current_app.config["app_context"])
     try:
-        result = service.find_data()
+        result = service.find_all_data()
         return json.jsonify(result=result), 200
     except Exception as e:
         print(e)
@@ -25,8 +26,8 @@ def list_tasks():
 def new_task():
 
     service = DataService(current_app.config["app_context"])
-    reqest_data = request.get_json()
-    name = reqest_data.get("name", None)
+    request_data = request.get_json()
+    name = request_data.get("name", None)
     if not name:
         return None, 400
     try:
@@ -37,22 +38,32 @@ def new_task():
         return "server error", 500
 
 
-@data_api.route('/task/<string:id>', methods=["PUT", "DELETE"])
-def update_task(id):
+@data_api.route('/task/<int:id>', methods=["PUT", "DELETE"])
+def update_or_delete_task(id):
 
     service = DataService(current_app.config["app_context"])
-    reqest_data = request.get_json()
+    request_data = request.get_json()
     try:
-
+        status = request_data.get("status")
+        name = request_data.get("name")
+        _id = request_data.get("id")
+        data_exist = service.check_exist_by_id(id)
+        
         if request.method == "PUT":
-            result = service.update_task(id)
-            # TODO:判斷拿不到id 要報錯 但不是回傳500
-            return json.jsonify(result=result), 200
+            if int(_id) != id:
+                return json.jsonify({"error":"id is not match."}), 400
+            if status == None or name == None:          
+                return json.jsonify({"error":"missing request, input:{}".format(request_data)})
+            if not isinstance(status, int) or not isinstance(name, str):
+                return json.jsonify({"error":"request type wrong, input:{}".format(request_data)})
+            result = service.update_task(id=_id, status=status, name=name)
+            return json.jsonify(result), 200
+        
         if request.method == "DELETE":
             result = service.delete_task(id)
-            # TODO:判斷拿不到id 要報錯 但不是回傳500
-            return "success" ,200
-        return 405
+            return "success", 200
+    except RuntimeError as exp:
+        return json.jsonify({"error": str(exp)}), 400
     except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         return "server error", 500
