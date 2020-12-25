@@ -15,7 +15,7 @@ class DataService(object):
     def check_exist_by_id(self, id):
         boolean = self.__test_dao.check_exist_by_id(id)
         if boolean == True:
-            pass
+            return boolean
         else:
             raise RuntimeError("id is not found in database")
 

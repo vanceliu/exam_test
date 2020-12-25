@@ -32,5 +32,4 @@ class TestDao(MySqlRepository):
 
     def delete_data(self, id):
         result = self.table.delete().where(self.table.id==id).execute()
-        print(result)
         return True if result !=0 else False
