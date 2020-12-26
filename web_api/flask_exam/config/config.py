@@ -8,8 +8,8 @@ class init_config():
         try:
             # 透過 docker-compose.yml 內的 link: mysql 拿到hostname
             mysql_config =  MySqlConfig(dbname="Test",
-                                        host="0.0.0.0", # local-test
-                                        # host="mysql", # docker
+                                        # host="0.0.0.0", # local-test
+                                        host="mysql", # docker
                                         username="root",
                                         port=3306,
                                         password="abcd123"

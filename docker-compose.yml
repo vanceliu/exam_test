@@ -22,6 +22,10 @@ services:
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
         read_only: true
+      - type: bind
+        source: ./mysql/conf/mymysqld.cnf
+        target: /etc/mysql/mysql.conf.d/mysqld.cnf
+        read_only: true
     environment:
       MYSQL_ROOT_PASSWORD: abcd123
       TZ: Asia/Taipei

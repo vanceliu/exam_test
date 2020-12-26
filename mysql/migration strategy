@@ -1,0 +1,4 @@
+migration strategy
+1. mysqldump database to sql file.
+2. new mysql import sql file data.
+
