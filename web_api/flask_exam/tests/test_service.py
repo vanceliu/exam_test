@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from unittest.mock import patch
-from service.data_service import DataService
-from db.dao import TestDao
+import sys, os
 
 # From Python unittest document:
 # Note The order in which the various tests will be run is determined by 
@@ -26,7 +25,7 @@ class ServiceTestCase(unittest.TestCase):
         self.service = DataService(app_context)
 
     def test_0100_find_all_data_success(self):
-        find_all_patch = patch.object(TestDao, 'find_all',
+        find_all_patch = patch.object(DataDao, 'find_all',
                                       side_effect=self.mock_find_all)
         find_all_patch.start()
         return_data = self.service.find_all_data()
@@ -37,7 +36,7 @@ class ServiceTestCase(unittest.TestCase):
         Test case:
         return_data must be true
         """
-        check_exist_by_id_patch = patch.object(TestDao, 'check_exist_by_id',
+        check_exist_by_id_patch = patch.object(DataDao, 'check_exist_by_id',
                                                 side_effect=self.mock_check_exist_by_id)
         check_exist_by_id_patch.start()
         id = 1
@@ -51,7 +50,7 @@ class ServiceTestCase(unittest.TestCase):
         """
         self.assertRaisesRegex(RuntimeError, "id is not found in database", self.check_exist_by_id_fail)
     def check_exist_by_id_fail(self):
-        check_exist_by_id_patch = patch.object(TestDao, 'check_exist_by_id',
+        check_exist_by_id_patch = patch.object(DataDao, 'check_exist_by_id',
                                                 side_effect=self.mock_check_exist_by_id)
         check_exist_by_id_patch.start()
         id = 2
@@ -64,9 +63,9 @@ class ServiceTestCase(unittest.TestCase):
         create task will return data
         """
         name = "test"
-        insert_data_patch = patch.object(TestDao, 'insert_data',
+        insert_data_patch = patch.object(DataDao, 'insert_data',
                                         side_effect=self.mock_insert_data)
-        get_by_id_patch = patch.object(TestDao, 'get_by_id', 
+        get_by_id_patch = patch.object(DataDao, 'get_by_id', 
                                         side_effect=self.mock_get_by_id)
         get_by_id_patch.start()
         insert_data_patch.start()
@@ -83,9 +82,9 @@ class ServiceTestCase(unittest.TestCase):
         _id = 1
         status = 1
         name = "test2"
-        update_data_patch = patch.object(TestDao, 'update_data',
+        update_data_patch = patch.object(DataDao, 'update_data',
                                         side_effect=self.mock_update_data)
-        get_by_id_patch = patch.object(TestDao, 'get_by_id', 
+        get_by_id_patch = patch.object(DataDao, 'get_by_id', 
                                         side_effect=self.mock_get_by_id)
         get_by_id_patch.start()
         update_data_patch.start()
@@ -100,7 +99,7 @@ class ServiceTestCase(unittest.TestCase):
         delete task success
         """
         _id = 1
-        delete_data_patch = patch.object(TestDao, 'delete_data',
+        delete_data_patch = patch.object(DataDao, 'delete_data',
                                         side_effect=self.mock_delete_data)
         delete_data_patch.start()
         return_data = self.service.delete_task(_id)
@@ -115,7 +114,7 @@ class ServiceTestCase(unittest.TestCase):
         self.assertRaisesRegex(RuntimeError, "id is not found in database", self.delete_task_fail)
     def delete_task_fail(self):
         _id = 2
-        delete_data_patch = patch.object(TestDao, 'delete_data',
+        delete_data_patch = patch.object(DataDao, 'delete_data',
                                         side_effect=self.mock_delete_data)
         delete_data_patch.start()
         return_data = self.service.delete_task(_id)
@@ -143,4 +142,15 @@ class ServiceTestCase(unittest.TestCase):
             return False
 
 if __name__ == '__main__':
+    sys.path.append(os.path.dirname(os.getcwd()))
+    from service.data_service import DataService
+    from db.dao import DataDao
     unittest.main()
+else:
+    try:
+        from service.data_service import DataService
+        from db.dao import DataDao
+    except:
+        sys.path.append(os.getcwd())
+        from service.data_service import DataService
+        from db.dao import DataDao

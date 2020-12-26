@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from db.dao import TestDao
+from db.dao import DataDao
 
 class DataService(object):
     def __init__(self, app_context):
-        self.__test_dao = TestDao(app_context.mysql_client)
+        self.__test_dao = DataDao(app_context.mysql_client)
 
     def find_all_data(self):
         result = self.__test_dao.find_all()

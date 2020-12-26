@@ -1,18 +1,34 @@
 # -*- coding: utf-8 -*-
 import unittest
 from unittest.mock import patch
-from start import app
-from service.data_service import DataService
+import sys, os
 
 # From Python unittest document:
 # Note The order in which the various tests will be run is determined by 
 # sorting the test method names with respect to the built-in ordering 
 # for strings.
+class init_config():
+    def __init__(self):
+        self.mysql_client = self.init_mysql_client()
+    def init_mysql_client(self):
+        try:
+            mysql_config =  MySqlConfig(dbname="Test",
+                                        host="0.0.0.0", # local-test
+                                        username="root",
+                                        port=3306,
+                                        password="abcd123"
+                                        )
+            provider = MySqlConnectionProvider(mysql_config)
+            return provider.create_client()
+        except Exception as e:
+            print("init mysql client has error")
+            raise
 
 class APITestCase(unittest.TestCase):
     task_data = None
     def setUp(self):
         app.testing = True  # select app in test mode
+        app.config["app_context"] = init_config()
         self.client = app.test_client()
 
     def test_0100_list_tasks_success(self):
@@ -23,9 +39,7 @@ class APITestCase(unittest.TestCase):
         response = self.client.get("/tasks")
         resp_data = response.json
         error_code = response.status_code
-        self.assertEqual(resp_data, {"result": [{"id": 1,
-                                                 "name": "name",
-                                                 "status": 0}]})
+        assert({"id": 1,"name": "name","status": 0} in resp_data["result"])
         self.assertEqual(error_code, 200)
 
     def test_0101_list_tasks_fail(self):
@@ -218,4 +232,18 @@ class APITestCase(unittest.TestCase):
         raise RuntimeError("raise RuntimeError")
 
 if __name__ == '__main__':
+    sys.path.append(os.path.dirname(os.getcwd()))
+    from start import app
+    from service.data_service import DataService
+    from db.mysql_base import MySqlConnectionProvider, MySqlConfig
     unittest.main()
+else:
+    try:
+        from start import app
+        from service.data_service import DataService
+        from db.mysql_base import MySqlConnectionProvider, MySqlConfig
+    except ImportError:
+        sys.path.append(os.getcwd())
+        from start import app
+        from service.data_service import DataService
+        from db.mysql_base import MySqlConnectionProvider, MySqlConfig

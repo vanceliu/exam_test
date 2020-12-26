@@ -3,7 +3,7 @@ import peewee
 from db.models import Test_Table
 from db.mysql_base import MySqlRepository
 
-class TestDao(MySqlRepository):
+class DataDao(MySqlRepository):
     def __init__(self, mysql_client):
         super().__init__(mysql_client)
 
