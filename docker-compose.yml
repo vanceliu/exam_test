@@ -36,8 +36,8 @@ services:
     build: ./nginx/
     ports: 
       - "80:80"
-    volumes_from:
-      - web
+    volumes:
+      - socket:/usr/src/app/flask_exam/
     links:
       - web:flask_exam
     depends_on:
